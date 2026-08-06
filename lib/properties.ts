@@ -81,6 +81,7 @@ export function mapRow(row: DbProperty): PropertyDetail {
     features: row.features ?? [],
     tag: row.tag ?? undefined,
     tagColor: (row.tagColor as Property["tagColor"]) ?? undefined,
+    ownerName: row.ownerName ?? undefined,
     description: row.description,
     views: row.views,
     createdAt: row.createdAt,
@@ -103,8 +104,29 @@ export async function fetchProperties(
   const qs = params
     ? "?" + new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)])).toString()
     : "";
-  const res = await api.get<PaginatedResponse>(`/properties${qs}`, fetchOptions);
-  return (res.data ?? []).map(mapRow);
+  try {
+    const res = await api.get<PaginatedResponse>(`/properties${qs}`, fetchOptions);
+    return (res.data ?? []).map(mapRow);
+  } catch {
+    const { properties } = await import("@/lib/mock");
+    return properties.map((p) => ({
+      ...p,
+      images: [p.image],
+      features: [] as string[],
+      description: "",
+      views: 0,
+      createdAt: new Date().toISOString(),
+      agent: p.agent
+        ? {
+            id: p.agent.id,
+            displayName: p.agent.displayName ?? null,
+            avatarUrl: p.agent.avatarUrl ?? null,
+            phone: p.agent.phone ?? null,
+            bio: p.agent.bio ?? null,
+          }
+        : null,
+    }));
+  }
 }
 
 export async function fetchProperty(

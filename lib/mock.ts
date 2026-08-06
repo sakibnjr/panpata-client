@@ -14,6 +14,14 @@ export type Property = {
   image: string;
   tag?: string;
   tagColor?: "brand" | "orange";
+  ownerName?: string;
+  agent?: {
+    id: string;
+    displayName?: string | null;
+    avatarUrl?: string | null;
+    phone?: string | null;
+    bio?: string | null;
+  } | null;
 };
 
 export type Agent = {
