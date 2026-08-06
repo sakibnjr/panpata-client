@@ -18,9 +18,7 @@ export function FeaturedPropertyCard({
   p: ExtendedProperty;
   className?: string;
 }) {
-  // Derive a short property id from the real id
-  const propId = p.propertyId ?? `#${p.id.padStart(8, "0")}`;
-  const agency = p.agency ?? "Navana Real Estate";
+  const agency = p.agency ?? "";
   const agentName = p.agentName ?? "Agent";
 
   return (
@@ -70,17 +68,14 @@ export function FeaturedPropertyCard({
           <span className="font-semibold">{p.baths}</span>ba{" "}
           <span className="text-muted-foreground">|</span>{" "}
           <span className="font-semibold">{p.sqft.toLocaleString()}</span> sqft{" "}
-          <span className="text-muted-foreground">|</span>{" "}
-          <span>{p.status}</span>
+          <span className="text-muted-foreground">|</span> <span>{p.status}</span>
         </div>
 
         {/* Address */}
         <p className="mt-1 truncate text-sm text-muted-foreground">{p.address}</p>
 
-        {/* Property Id, Agency, Agent */}
-        <p className="mt-1 truncate text-xs text-muted-foreground">
-          Property Id {propId},{agency}
-        </p>
+        {/* Agency & Agent */}
+        <p className="mt-1 truncate text-xs text-muted-foreground">{agency}</p>
         <p className="truncate text-xs text-muted-foreground">{agentName}</p>
       </div>
     </Link>

@@ -9,11 +9,11 @@ export function PropertyCard({ p, className }: { p: Property; className?: string
     <Link
       href={`/property/${p.id}`}
       className={cn(
-        "group block overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm transition hover:shadow-md",
+        "group block w-[340px] min-w-[340px] max-w-[340px] shrink-0 snap-start overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm transition hover:shadow-md",
         className,
       )}
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+      <div className="relative aspect-[4/3] h-[220px] w-full overflow-hidden bg-gray-100">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={getOptimizedImageUrl(p.image)}
@@ -25,7 +25,7 @@ export function PropertyCard({ p, className }: { p: Property; className?: string
           <span
             className={cn(
               "absolute left-3 top-3 rounded-md px-2.5 py-1 text-xs font-semibold text-white shadow",
-              p.tagColor === "brand" ? "bg-primary" : "bg-orange-500"
+              p.tagColor === "brand" ? "bg-primary" : "bg-orange-500",
             )}
           >
             {p.tag}
@@ -42,7 +42,7 @@ export function PropertyCard({ p, className }: { p: Property; className?: string
         </div>
       </div>
 
-      <div className="flex flex-col justify-between p-4 min-h-[140px]">
+      <div className="flex h-[155px] flex-col justify-between p-4 bg-white">
         <div>
           <div className="text-lg font-bold text-gray-900 tracking-tight">
             BDT {p.price.toLocaleString("en-US")}
@@ -52,21 +52,20 @@ export function PropertyCard({ p, className }: { p: Property; className?: string
             <span className="font-bold">{p.beds}</span>bds |{" "}
             <span className="font-bold">{p.baths}</span>ba |{" "}
             <span className="font-bold">{p.sqft.toLocaleString("en-US")}</span> sqft |{" "}
-            <span className="text-gray-600">{p.type === "House" ? "House for sale" : `${p.type} for sale`}</span>
+            <span className="text-gray-600">
+              {p.type === "House" ? "House for sale" : `${p.type} for sale`}
+            </span>
           </div>
 
-          <p className="mt-2 text-xs text-gray-600 line-clamp-2 leading-relaxed">
+          <p className="mt-2 text-xs text-gray-600 line-clamp-2 leading-relaxed min-h-[32px]">
             {p.address}
           </p>
         </div>
 
-        {agencyOrOwner && (
-          <div className="mt-3 text-[11px] text-gray-500 font-medium truncate">
-            {agencyOrOwner}
-          </div>
-        )}
+        <div className="mt-2 text-[11px] text-gray-500 font-medium truncate min-h-[16px]">
+          {agencyOrOwner ?? ""}
+        </div>
       </div>
     </Link>
   );
 }
-

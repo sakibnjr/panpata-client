@@ -5,7 +5,7 @@ import buyIllustration from "@/public/assets/buy page illustration.png";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
 import { PropertyCard } from "@/components/site/PropertyCard";
-import { PropertyCardSkeleton } from "@/components/site/Skeletons";
+import { BuyPageCardSkeleton } from "@/components/site/Skeletons";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -111,13 +111,13 @@ function BuyContent() {
 
   function toggleType(type: PropertyType) {
     setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
   }
 
   function toggleArea(area: string) {
     setSelectedAreas((prev) =>
-      prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]
+      prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area],
     );
   }
 
@@ -452,7 +452,7 @@ function BuyContent() {
         {isLoading ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <PropertyCardSkeleton key={i} />
+              <BuyPageCardSkeleton key={i} />
             ))}
           </div>
         ) : filtered.length === 0 ? (
@@ -473,7 +473,7 @@ function BuyContent() {
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((p) => (
-              <PropertyCard key={p.id} p={p} className="w-full" />
+              <PropertyCard key={p.id} p={p} className="!w-full !min-w-0 !max-w-none" />
             ))}
           </div>
         )}

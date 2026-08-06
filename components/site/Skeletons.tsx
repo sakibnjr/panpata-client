@@ -13,6 +13,20 @@ export function PropertyCardSkeleton() {
   );
 }
 
+export function BuyPageCardSkeleton() {
+  return (
+    <div className="w-full overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm">
+      <Skeleton className="h-[220px] w-full rounded-none" />
+      <div className="p-4 space-y-2">
+        <Skeleton className="h-6 w-36" />
+        <Skeleton className="h-4 w-52" />
+        <Skeleton className="h-4 w-44" />
+        <Skeleton className="mt-2 h-3 w-24" />
+      </div>
+    </div>
+  );
+}
+
 export function AgentCardSkeleton() {
   return (
     <div className="flex min-w-[320px] max-w-[340px] flex-shrink-0 snap-start gap-4 rounded-xl border border-border bg-white p-4 shadow-sm">
