@@ -2,218 +2,363 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Star } from "lucide-react";
-import { Search } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, User } from "lucide-react";
 import type { AgentProfile } from "@/lib/agents";
 import { getOptimizedImageUrl } from "@/lib/utils";
 
-type SearchMode = "location" | "name";
+export function AgentsGrid({
+  initialAgents = [],
+}: {
+  initialAgents?: AgentProfile[];
+}) {
+  const [locationQuery, setLocationQuery] = useState("");
+  const [nameQuery, setNameQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
-// ── AgentListCard ─────────────────────────────────────────────────────────────
+  // Filter agents directly from backend data
+  const filtered = useMemo(() => {
+    const loc = locationQuery.trim().toLowerCase();
+    const name = nameQuery.trim().toLowerCase();
 
-function AgentListCard({ agent }: { agent: AgentProfile }) {
-  const name = agent.displayName ?? "Unknown Agent";
-  const [imgError, setImgError] = useState(false);
-  const showAvatar = !!agent.avatarUrl && !imgError;
-  const listingCount = agent._count?.properties ?? 0;
-  const memberYear = new Date(agent.createdAt).getFullYear();
+    return (initialAgents || []).filter((agent) => {
+      const bio = (agent.bio ?? "").toLowerCase();
+      const displayName = (agent.displayName ?? "").toLowerCase();
+      const email = (agent.email ?? "").toLowerCase();
+
+      const matchLoc = !loc || bio.includes(loc) || displayName.includes(loc);
+      const matchName = !name || displayName.includes(name) || email.includes(name);
+
+      return matchLoc && matchName;
+    });
+  }, [initialAgents, locationQuery, nameQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const visibleAgents = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filtered.slice(start, start + itemsPerPage);
+  }, [filtered, currentPage, itemsPerPage]);
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    setCurrentPage(1);
+  }
 
   return (
-    <Link
-      href={`/agent/${agent.id}`}
-      className="group flex gap-4 rounded-xl border border-border bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/30"
-    >
-      <div className="relative shrink-0">
-        {showAvatar ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={getOptimizedImageUrl(agent.avatarUrl)}
-            alt={name}
-            onError={() => setImgError(true)}
-            loading="lazy"
-            className="h-[90px] w-[90px] rounded-full object-cover border border-border"
-          />
-        ) : (
-          <div className="flex h-[90px] w-[90px] items-center justify-center rounded-full bg-primary/10 text-primary text-3xl font-bold border border-border">
-            {name[0].toUpperCase()}
-          </div>
-        )}
-        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-2 py-0.5 text-[9px] font-bold text-primary-foreground shadow">
-          Verified
-        </span>
+    <>
+      {/* Search Bar Container */}
+      <form
+        onSubmit={handleSearch}
+        className="mb-10 sm:mb-12 flex flex-col sm:flex-row items-center justify-start gap-3 w-full"
+      >
+        {/* Location Input */}
+        <input
+          type="text"
+          value={locationQuery}
+          onChange={(e) => {
+            setLocationQuery(e.target.value);
+            setCurrentPage(1);
+          }}
+          placeholder="Address, neighborhood, city or zip code"
+          className="w-full sm:flex-1 rounded-full border border-gray-300 bg-white px-5 py-3 text-sm text-slate-800 placeholder:text-gray-400 shadow-xs focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+        />
+
+        {/* Agent Name Input */}
+        <input
+          type="text"
+          value={nameQuery}
+          onChange={(e) => {
+            setNameQuery(e.target.value);
+            setCurrentPage(1);
+          }}
+          placeholder="Agent name"
+          className="w-full sm:flex-1 rounded-full border border-gray-300 bg-white px-5 py-3 text-sm text-slate-800 placeholder:text-gray-400 shadow-xs focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+        />
+
+        {/* Find Agent Button */}
+        <button
+          type="submit"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-[#00c853] hover:bg-[#00b248] active:scale-95 text-white font-medium px-6 py-3 text-sm transition-all shadow-xs cursor-pointer whitespace-nowrap shrink-0"
+        >
+          <Search className="h-4 w-4" />
+          <span>Find agent</span>
+        </button>
+      </form>
+
+      {/* Results Counter */}
+      <div className="mb-6 px-0">
+        <p className="text-sm font-normal text-slate-700">
+          {filtered.length} agent{filtered.length !== 1 ? "s" : ""} found
+        </p>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-center">
-        <div className="flex items-start justify-between gap-2">
-          <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-primary">
-            AGENT
-          </span>
-          <div className="flex items-center gap-1 shrink-0">
-            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-            <span className="text-xs font-bold text-foreground">5.0</span>
-            <span className="text-xs text-muted-foreground">({listingCount > 0 ? listingCount * 17 + 84 : "—"})</span>
+      {/* Agent Cards Grid */}
+      {filtered.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-slate-50 py-16 text-center">
+          <p className="text-base font-semibold text-slate-800">No agents found</p>
+          <p className="mt-1 text-sm text-slate-500">
+            {locationQuery || nameQuery
+              ? "Try adjusting your location or agent name filter."
+              : "No agents registered in the database yet."}
+          </p>
+          {(locationQuery || nameQuery) && (
+            <button
+              onClick={() => {
+                setLocationQuery("");
+                setNameQuery("");
+                setCurrentPage(1);
+              }}
+              className="mt-4 rounded-full border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {visibleAgents.map((agent) => (
+            <NewAgentCard key={agent.id} agent={agent} />
+          ))}
+        </div>
+      )}
+
+      {/* ── Pagination Controls ────────────────────────────────────────────── */}
+      {totalPages > 1 && (
+        <div className="mt-12 mb-16 flex items-center justify-center gap-3.5 text-sm font-medium">
+          {/* Left Arrow Button */}
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-gray-400 hover:border-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            aria-label="Previous Page"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+
+          {/* Page Numbers */}
+          <div className="flex items-center gap-3">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => {
+              const isActive = currentPage === num;
+              return (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => setCurrentPage(num)}
+                  className={`relative px-1 py-0.5 text-sm transition-colors ${
+                    isActive
+                      ? "font-bold text-slate-900 border-b-2 border-slate-900"
+                      : "font-normal text-gray-400 hover:text-gray-700"
+                  }`}
+                >
+                  {num}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right Arrow Button */}
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-gray-400 hover:border-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            aria-label="Next Page"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {/* ── Why Choose a agent Section ──────────────────────────────────────── */}
+      <section className="mt-12 pt-10 pb-16 bg-[#fafafa]/80 rounded-3xl px-6 sm:px-10 border border-gray-100/80">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-10 text-center sm:text-left">
+          Why Choose <span className="text-[#00c853]">a agent</span>
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          {/* Feature Card 1 */}
+          <div className="flex flex-col items-center justify-center rounded-2xl bg-white p-8 text-center shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] border border-gray-100/90 transition-all hover:shadow-md">
+            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 border border-slate-100 p-2 overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/bento-agent.webp"
+                alt="Local expert"
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              Connect with a local expert
+            </h3>
+            <p className="mt-2.5 text-xs text-slate-500 leading-relaxed max-w-xs">
+              Work with experienced local agents dedicated to achieving the best results.
+            </p>
+          </div>
+
+          {/* Feature Card 2 */}
+          <div className="flex flex-col items-center justify-center rounded-2xl bg-white p-8 text-center shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] border border-gray-100/90 transition-all hover:shadow-md">
+            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 border border-slate-100 p-2 overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/bento-buy.webp"
+                alt="Lower commission rates"
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              Lower commission rates
+            </h3>
+            <p className="mt-2.5 text-xs text-slate-500 leading-relaxed max-w-xs">
+              Buy or sell your property with us and save more with our competitive commission rates.
+            </p>
+          </div>
+
+          {/* Feature Card 3 */}
+          <div className="flex flex-col items-center justify-center rounded-2xl bg-white p-8 text-center shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] border border-gray-100/90 transition-all hover:shadow-md">
+            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 border border-slate-100 p-2 overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/buy page illustration.png"
+                alt="Connect with more buyers"
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              Connect with more buyers
+            </h3>
+            <p className="mt-2.5 text-xs text-slate-500 leading-relaxed max-w-xs">
+              Reach more buyers and sellers with a platform built for maximum exposure.
+            </p>
           </div>
         </div>
+      </section>
 
-        <h3 className="mt-1 text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
-          {name}
-        </h3>
+      {/* ── Frequently Asked Questions Section ─────────────────────────────── */}
+      <section className="mt-16 mb-20 max-w-4xl mx-auto px-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[#00c853] text-center mb-10">
+          Frequently asked questions
+        </h2>
 
-        {agent.bio ? (
-          <p className="text-xs text-muted-foreground truncate">{agent.bio}</p>
-        ) : (
-          <p className="text-xs text-muted-foreground">Panpata Realty</p>
-        )}
-
-        <ul className="mt-2 space-y-0.5 text-xs text-foreground/80">
-          <li>
-            <span className="font-bold">{listingCount}</span>{" "}
-            <span className="text-muted-foreground">
-              active listing{listingCount !== 1 ? "s" : ""}
-            </span>
-          </li>
-          <li>
-            <span className="font-bold">{listingCount > 0 ? listingCount * 3 + 10 : 0}</span>{" "}
-            <span className="text-muted-foreground">sales last 12 months</span>
-          </li>
-          <li>
-            Member since <span className="font-bold">{memberYear}</span>
-          </li>
-        </ul>
-      </div>
-    </Link>
+        <FaqAccordion />
+      </section>
+    </>
   );
 }
 
-// ── AgentCardSkeleton ─────────────────────────────────────────────────────────
+// ─── FAQ Accordion Component ──────────────────────────────────────────────────
 
-function AgentCardSkeleton() {
+function FaqAccordion() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const faqs = [
+    {
+      q: "How to find good real estate agent near me?",
+      a: "You can search by location, neighborhood, or ZIP code on Panpata to browse top-rated local real estate agents operating directly in your area.",
+    },
+    {
+      q: "How to pick a real estate agent?",
+      a: "Look for agents with high deal volume, strong client reviews, and deep expertise in your target neighborhood or specific property type.",
+    },
+    {
+      q: "How to contact a real estate agent?",
+      a: "Click the 'Contact' button on any agent card or profile page to send a direct message, email, or request a call back.",
+    },
+  ];
+
   return (
-    <div className="flex gap-4 rounded-xl border border-border bg-white p-5 shadow-sm">
-      <div className="h-[90px] w-[90px] shrink-0 rounded-full bg-muted animate-pulse" />
-      <div className="flex-1 space-y-2 py-1">
-        <div className="flex justify-between">
-          <div className="h-4 w-12 rounded bg-muted animate-pulse" />
-          <div className="h-4 w-16 rounded bg-muted animate-pulse" />
-        </div>
-        <div className="h-5 w-36 rounded bg-muted animate-pulse" />
-        <div className="h-3 w-28 rounded bg-muted animate-pulse" />
-        <div className="space-y-1.5 pt-1">
-          <div className="h-3 w-40 rounded bg-muted animate-pulse" />
-          <div className="h-3 w-36 rounded bg-muted animate-pulse" />
-          <div className="h-3 w-32 rounded bg-muted animate-pulse" />
-        </div>
-      </div>
+    <div className="space-y-0">
+      {faqs.map((faq, index) => {
+        const isOpen = openIndex === index;
+        return (
+          <div key={index} className="border-b border-slate-900">
+            <button
+              type="button"
+              onClick={() => setOpenIndex(isOpen ? null : index)}
+              className="w-full flex items-center justify-between py-5 text-left transition-colors group cursor-pointer"
+            >
+              <span className="text-sm sm:text-base font-medium text-slate-900 group-hover:text-[#00c853] transition-colors">
+                {faq.q}
+              </span>
+              <ChevronRight
+                className={`h-4 w-4 text-slate-900 shrink-0 transition-transform duration-200 ${
+                  isOpen ? "rotate-90 text-[#00c853]" : ""
+                }`}
+              />
+            </button>
+            {isOpen && (
+              <p className="pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200">
+                {faq.a}
+              </p>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-// ── AgentsGrid — client island for search + filter + pagination ───────────────
+// ─── New Agent Card Component rendering real backend data ──────────────────────
 
-export function AgentsGrid({ agents }: { agents: AgentProfile[] }) {
-  const [searchMode, setSearchMode] = useState<SearchMode>("location");
-  const [searchValue, setSearchValue] = useState("");
-  const [visibleCount, setVisibleCount] = useState(6);
-
-  const filtered = useMemo(() => {
-    const q = searchValue.trim().toLowerCase();
-    if (!q) return agents;
-    if (searchMode === "name") {
-      return agents.filter((a) => (a.displayName ?? "").toLowerCase().includes(q));
-    }
-    return agents.filter((a) => {
-      const bio = (a.bio ?? "").toLowerCase();
-      const name = (a.displayName ?? "").toLowerCase();
-      return bio.includes(q) || name.includes(q);
-    });
-  }, [agents, searchValue, searchMode]);
-
-  const visible = filtered.slice(0, visibleCount);
-  const hasMore = visibleCount < filtered.length;
+function NewAgentCard({ agent }: { agent: AgentProfile }) {
+  const [imgError, setImgError] = useState(false);
+  const displayName = agent.displayName ?? "Verified Agent";
+  const subtitle = agent.bio ? agent.bio : "Agent . Dhaka";
+  const totalDeals = agent._count?.properties ?? 0;
+  const avatar = agent.avatarUrl ? getOptimizedImageUrl(agent.avatarUrl) : null;
+  const showAvatar = !!avatar && !imgError;
 
   return (
-    <>
-      {/* Search bar */}
-      <div className="mb-8 rounded-xl border border-border bg-white shadow-sm overflow-hidden">
-        <p className="px-4 pt-3 pb-1 text-xs font-semibold text-foreground/70 uppercase tracking-wide">
-          Find a real estate agent
-        </p>
-        <div className="flex border-b border-border">
-          {(["location", "name"] as SearchMode[]).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => setSearchMode(mode)}
-              className={`flex-1 py-2.5 text-sm font-semibold capitalize transition-colors border-b-2 -mb-px ${
-                searchMode === mode
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {mode === "location" ? "Location" : "Name"}
-            </button>
-          ))}
-        </div>
-        <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2 px-3 py-2">
-          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <input
-            id="agents-search-input"
-            type="text"
-            value={searchValue}
-            onChange={(e) => { setSearchValue(e.target.value); setVisibleCount(6); }}
-            placeholder={searchMode === "location" ? "City, neighborhood, or ZIP code" : "Agent name"}
-            className="flex-1 bg-transparent py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+    <div className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.06)] hover:shadow-lg transition-all duration-300">
+      {/* Top Agent Image */}
+      <div className="relative h-64 sm:h-60 w-full overflow-hidden bg-gray-100 flex items-center justify-center">
+        {showAvatar ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={avatar}
+            alt={displayName}
+            onError={() => setImgError(true)}
+            loading="lazy"
+            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 object-center"
           />
-          <button
-            type="submit"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            <Search className="h-4 w-4" />
-          </button>
-        </form>
-      </div>
-
-      {/* Results */}
-      <div className="mt-10">
-        {filtered.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border bg-white py-20 text-center">
-            <p className="text-base font-semibold text-foreground">No agents found</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {searchValue ? `Try a different ${searchMode}.` : "No agents registered yet."}
-            </p>
-            {searchValue && (
-              <button
-                onClick={() => setSearchValue("")}
-                className="mt-4 rounded-full border border-border bg-white px-5 py-2 text-sm font-medium hover:bg-muted/30 transition-colors"
-              >
-                Clear search
-              </button>
-            )}
-          </div>
         ) : (
-          <>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {visible.map((agent) => (
-                <AgentListCard key={agent.id} agent={agent} />
-              ))}
-            </div>
-
-            <div className="mt-10 flex flex-col items-center gap-2">
-              {hasMore && (
-                <button
-                  onClick={() => setVisibleCount((n) => n + 6)}
-                  className="rounded-full border border-primary bg-white px-8 py-2.5 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors"
-                >
-                  View more
-                </button>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Showing {visible.length} of {filtered.length} agent{filtered.length !== 1 ? "s" : ""}
-              </p>
-            </div>
-          </>
+          <div className="flex h-full w-full items-center justify-center bg-emerald-50/60 text-emerald-600">
+            <User className="h-16 w-16 stroke-[1.5]" />
+          </div>
         )}
       </div>
-    </>
+
+      {/* Card Details Body */}
+      <div className="flex flex-1 flex-col justify-between p-5">
+        <div>
+          {/* Agent Display Name */}
+          <h3 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 line-clamp-1 group-hover:text-emerald-600 transition-colors">
+            {displayName}
+          </h3>
+
+          {/* Agent Role / Location */}
+          <p className="mt-1 text-xs text-slate-500 font-normal line-clamp-1">
+            {subtitle}
+          </p>
+
+          {/* Total Deals */}
+          <p className="mt-2.5 text-xs text-slate-900 font-semibold">
+            Total deals . {totalDeals}
+          </p>
+
+          {/* Email */}
+          <p className="mt-1 text-xs text-[#00c853] font-medium truncate">
+            {agent.email}
+          </p>
+        </div>
+
+        {/* Contact Button */}
+        <Link
+          href={`/agent/${agent.id}`}
+          className="mt-5 block w-full rounded-full border border-slate-300 py-2.5 px-4 text-center text-xs sm:text-sm font-medium text-slate-800 hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-all cursor-pointer"
+        >
+          Contact
+        </Link>
+      </div>
+    </div>
   );
 }

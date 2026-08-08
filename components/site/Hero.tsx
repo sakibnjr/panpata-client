@@ -53,21 +53,23 @@ export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setRecentSearches(loadRecent());
+    queueMicrotask(() => setRecentSearches(loadRecent()));
   }, []);
 
   const debouncedQuery = useDebounce(query, 280);
 
   useEffect(() => {
     if (!debouncedQuery.trim()) {
-      setSuggestions([]);
-      setOpen(false);
-      setLoading(false);
+      queueMicrotask(() => {
+        setSuggestions([]);
+        setOpen(false);
+        setLoading(false);
+      });
       return;
     }
 
     let cancelled = false;
-    setLoading(true);
+    queueMicrotask(() => setLoading(true));
     fetchAreaSuggestions(debouncedQuery).then((results) => {
       if (cancelled) return;
       setSuggestions(results);
@@ -168,6 +170,7 @@ export function Hero() {
               ref={inputRef}
               id="hero-search"
               type="text"
+              role="combobox"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}

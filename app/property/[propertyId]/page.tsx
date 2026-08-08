@@ -5,7 +5,6 @@ import { Footer } from "@/components/site/Footer";
 import { CarouselRow } from "@/components/site/CarouselRow";
 import { PropertyCard } from "@/components/site/PropertyCard";
 import { PropertySidebar } from "@/components/site/PropertySidebar";
-import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/mock";
 import { getOptimizedImageUrl } from "@/lib/utils";
 import { fetchProperty, fetchProperties, daysSince } from "@/lib/properties";

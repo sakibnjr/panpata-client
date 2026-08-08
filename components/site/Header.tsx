@@ -7,13 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { useRoles } from "@/hooks/use-role";
 import { toast } from "sonner";
+const Logo = ({ onClick }: { onClick?: () => void }) => (
+  <Link href="/" onClick={onClick} className="flex items-center">
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src="/assets/logo.png" alt="Panpata" className="h-13 w-auto object-contain" />
+  </Link>
+);
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const { user, clearUser } = useAuth();
-  const { isAdmin, isAgent } = useRoles();
   const router = useRouter();
   const linkCls =
     "text-base font-normal text-foreground/80 hover:text-primary";
@@ -23,13 +27,6 @@ export function Header() {
     toast.success("Signed out");
     router.push("/");
   };
-
-  const Logo = ({ onClick }: { onClick?: () => void }) => (
-    <Link href="/" onClick={onClick} className="flex items-center">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/assets/logo.png" alt="Panpata" className="h-13 w-auto object-contain" />
-    </Link>
-  );
 
   return (
     <header className="sticky inset-x-0 top-0 z-40 w-full border-b bg-white/90 backdrop-blur">

@@ -109,7 +109,8 @@ export default function AgentSignupPage() {
       await reloadUser();
 
       const formData = new FormData();
-      const { password: _pw, ...applicationData } = parsed.data;
+      const applicationData = { ...parsed.data } as Record<string, unknown>;
+      delete applicationData.password;
       Object.entries(applicationData).forEach(([k, v]) => {
         if (v !== undefined && v !== "") formData.append(k, String(v));
       });
