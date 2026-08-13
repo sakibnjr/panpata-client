@@ -1,69 +1,68 @@
-import { Home, Map, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 const cards = [
   {
-    icon: Home,
     title: "Buy a home",
-    body: "A real estate agent can provide you with a clear breakdown of costs so that you can avoid surprise expenses.",
-    cta: "Find a local agent",
+    body: "Whether you’re searching for flat, apartments, land or buy homes, we make it easy to find a place you'll love.",
+    cta: "See more",
     to: "/buy",
-    bg: "/assets/bento-buy.webp",
+    img: "/assets/buy-home.svg",
   },
   {
-    icon: Map,
     title: "Land share project",
-    body: "No matter what path you take to sell your home, we can help you navigate a successful sale.",
-    cta: "See your options",
+    body: "Proper planning, a transparent agreement, and partnering with a trusted developer can help maximize the value.",
+    cta: "See more",
     to: "/land-share",
-    bg: "/assets/bento-land.webp",
+    img: "/assets/land-share.svg",
   },
   {
-    icon: Users,
-    title: "Find my agent",
-    body: "We're creating a seamless online experience — from shopping on the largest rental network, to applying, to paying rent.",
-    cta: "Find rentals",
+    title: "Find my agents",
+    body: "Panpata agents are among the most experienced in the industry and can help you win in today's market.",
+    cta: "Explore agents",
     to: "/agents",
-    bg: "/assets/bento-agent.webp",
+    img: "/assets/find-agent.svg",
   },
 ];
 
 export function BentoCTAs() {
   return (
-    <section className="bg-muted/40 py-14">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {cards.map(({ icon: Icon, title, body, cta, to, bg }) => (
+    <section className="bg-[#f2f3f5] py-14 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-3">
+          {cards.map(({ title, body, cta, to, img }) => (
             <div
               key={title}
-              className="group relative flex min-h-[340px] flex-col overflow-hidden rounded-2xl text-center shadow-sm transition hover:shadow-md"
+              className="flex w-full min-h-[440px] flex-col items-center justify-between rounded-3xl border border-gray-200/80 bg-white p-8 sm:p-10 text-center shadow-[0_4px_25px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={bg}
-                alt=""
-                aria-hidden
-                loading="lazy"
-                width={768}
-                height={768}
-                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-white via-white/85 to-white/20" />
-              <div className="relative z-10 flex flex-1 flex-col items-center justify-end p-8">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white text-primary shadow-md ring-4 ring-white/70">
-                  <Icon className="h-7 w-7" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="mt-6 rounded-full border-primary bg-white/90 text-primary backdrop-blur hover:bg-primary hover:text-primary-foreground"
-                >
-                  <Link href={to}>{cta}</Link>
-                </Button>
+              {/* Top Graphic */}
+              <div className="flex h-40 w-full items-center justify-center pt-2">
+                <Image
+                  src={img}
+                  alt={title}
+                  width={150}
+                  height={150}
+                  priority
+                />
               </div>
+
+              {/* Title & Body */}
+              <div className="flex flex-col items-center my-4">
+                <h3 className="text-2xl sm:text-[26px] font-bold tracking-tight text-slate-900">
+                  {title}
+                </h3>
+                <p className="mt-3 text-sm sm:text-base leading-relaxed text-slate-500 max-w-xs sm:max-w-sm">
+                  {body}
+                </p>
+              </div>
+
+              {/* CTA Button */}
+              <Link
+                href={to}
+                className="inline-flex items-center justify-center rounded-xl border-2 border-[#00c067] px-7 py-3 text-sm font-semibold text-[#00c067] transition-all duration-200 hover:bg-[#00c067] hover:text-white cursor-pointer"
+              >
+                {cta}
+              </Link>
             </div>
           ))}
         </div>

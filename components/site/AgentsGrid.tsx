@@ -179,13 +179,8 @@ export function AgentsGrid({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
           {/* Feature Card 1 */}
           <div className="flex flex-col items-center justify-center rounded-2xl bg-white p-8 text-center shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] border border-gray-100/90 transition-all hover:shadow-md">
-            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 border border-slate-100 p-2 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/assets/bento-agent.webp"
-                alt="Local expert"
-                className="h-full w-full object-contain"
-              />
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+              <User className="h-10 w-10 stroke-[1.75]" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
               Connect with a local expert
@@ -197,13 +192,8 @@ export function AgentsGrid({
 
           {/* Feature Card 2 */}
           <div className="flex flex-col items-center justify-center rounded-2xl bg-white p-8 text-center shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] border border-gray-100/90 transition-all hover:shadow-md">
-            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 border border-slate-100 p-2 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/assets/bento-buy.webp"
-                alt="Lower commission rates"
-                className="h-full w-full object-contain"
-              />
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+              <Search className="h-10 w-10 stroke-[1.75]" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
               Lower commission rates

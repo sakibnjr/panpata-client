@@ -11,7 +11,11 @@ import { toast } from "sonner";
 const Logo = ({ onClick }: { onClick?: () => void }) => (
   <Link href="/" onClick={onClick} className="flex items-center">
     {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img src="/assets/logo.png" alt="Panpata" className="h-13 w-auto object-contain" />
+    <img
+      src="/assets/logo.png"
+      alt="Panpata"
+      className="h-13 w-auto object-contain"
+    />
   </Link>
 );
 
@@ -19,8 +23,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const { user, clearUser } = useAuth();
   const router = useRouter();
-  const linkCls =
-    "text-base font-normal text-foreground/80 hover:text-primary";
+  const linkCls = "font-normal hover:text-primary transition-colors py-2";
   const close = () => setOpen(false);
   const signOut = () => {
     clearUser();
@@ -30,7 +33,7 @@ export function Header() {
 
   return (
     <header className="sticky inset-x-0 top-0 z-40 w-full border-b bg-white/90 backdrop-blur">
-      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 sm:px-6 md:flex md:justify-between">
+      <div className="mx-auto grid h-18 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 sm:px-6 md:flex md:justify-between">
         {/* Left: hamburger on mobile, logo on desktop */}
         <div className="flex items-center justify-start md:contents">
           <Sheet open={open} onOpenChange={setOpen}>
@@ -63,17 +66,60 @@ export function Header() {
                 </div>
                 <nav className="px-5 py-6">
                   <ul className="flex flex-col gap-1">
-                    <li><Link href="/buy" onClick={close} className={`${linkCls} block py-3`}>Buy</Link></li>
-                    <li><Link href="/agents" onClick={close} className={`${linkCls} block py-3`}>Find My Agent</Link></li>
-                    <li><Link href="/advertisement" onClick={close} className={`${linkCls} block py-3`}>Advertisement</Link></li>
-                    <li><Link href="/land-share" onClick={close} className={`${linkCls} block py-3`}>Land Share Project</Link></li>
+                    <li>
+                      <Link
+                        href="/buy"
+                        onClick={close}
+                        className={`${linkCls} block py-3`}
+                      >
+                        Buy
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/agents"
+                        onClick={close}
+                        className={`${linkCls} block py-3`}
+                      >
+                        Find My Agent
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/advertisement"
+                        onClick={close}
+                        className={`${linkCls} block py-3`}
+                      >
+                        Advertisement
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/land-share"
+                        onClick={close}
+                        className={`${linkCls} block py-3`}
+                      >
+                        Land Share Project
+                      </Link>
+                    </li>
                   </ul>
                   {user ? (
-                    <Button onClick={() => { close(); signOut(); }} variant="outline" className="mt-6 w-full rounded-full text-base font-normal">
+                    <Button
+                      onClick={() => {
+                        close();
+                        signOut();
+                      }}
+                      variant="outline"
+                      className="mt-6 w-full rounded-full text-base font-normal"
+                    >
                       Sign out
                     </Button>
                   ) : (
-                    <Button asChild onClick={close} className="mt-6 w-full rounded-full text-base font-normal">
+                    <Button
+                      asChild
+                      onClick={close}
+                      className="mt-6 w-full rounded-full text-base font-normal"
+                    >
                       <Link href="/login">Sign in</Link>
                     </Button>
                   )}
@@ -93,21 +139,41 @@ export function Header() {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
-          <Link href="/buy" className={linkCls}>Buy</Link>
-          <Link href="/agents" className={linkCls}>Find My Agent</Link>
-          <Link href="/advertisement" className={linkCls}>Advertisement</Link>
-          <Link href="/land-share" className={linkCls}>Land Share Project</Link>
+          <Link href="/buy" className={linkCls}>
+            Buy
+          </Link>
+          <Link href="/agents" className={linkCls}>
+            Find My Agent
+          </Link>
+          <Link href="/advertisement" className={linkCls}>
+            Advertisement
+          </Link>
+          <Link href="/land-share" className={linkCls}>
+            Land Share Project
+          </Link>
           {user ? (
-            <Button onClick={signOut} variant="outline" className="rounded-full px-6 text-base font-normal">Sign out</Button>
+            <Button
+              onClick={signOut}
+              variant="outline"
+              className="rounded-full px-6 text-base font-normal"
+            >
+              Sign out
+            </Button>
           ) : (
-            <Button asChild className="rounded-full px-6 text-base font-normal"><Link href="/login">Sign in</Link></Button>
+            <Button asChild className="rounded-full px-6 text-base font-normal">
+              <Link href="/login">Sign in</Link>
+            </Button>
           )}
         </nav>
 
         {/* Right: sign in on mobile */}
         <div className="justify-self-end md:hidden">
           {user ? (
-            <Button onClick={signOut} variant="outline" className="rounded-full px-4 text-sm font-normal">
+            <Button
+              onClick={signOut}
+              variant="outline"
+              className="rounded-full px-4 text-sm font-normal"
+            >
               Sign out
             </Button>
           ) : (
