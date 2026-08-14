@@ -26,7 +26,7 @@ export function AdWhyAdvertise() {
     <section className="py-14 md:py-20 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center tracking-tight">
-          Why advertise on paanpata?
+          Why advertise on panpata?
         </h2>
 
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 sm:gap-6">

@@ -28,7 +28,7 @@ export function AdHeroSection() {
                 </span>
               </h1>
               <p className="mt-4 text-sm sm:text-base text-gray-600 leading-relaxed max-w-sm">
-                Advertise on Paanpata and Get More Views, Inquiries &amp; Leads.
+                Advertise on Panpata and Get More Views, Inquiries &amp; Leads.
               </p>
             </div>
 

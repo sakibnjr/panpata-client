@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { Star } from "lucide-react";
 
 const AD_PLANS = [
   {
     name: "Free plan",
     subtitle: "Perfect for property owners & small agents",
     price: "৳0",
+    highlighted: false,
     features: [
       { included: true, text: "1 basic listing" },
       { included: true, text: "Basic search listing" },
@@ -20,6 +22,7 @@ const AD_PLANS = [
     name: "Starter",
     subtitle: "Perfect for property owners & small agents",
     price: "৳2,500",
+    highlighted: false,
     features: [
       { included: true, text: "Up to 5 featured listings" },
       { included: true, text: "Basic search listing" },
@@ -35,6 +38,8 @@ const AD_PLANS = [
     name: "Professional",
     subtitle: "Best for agents, brokers & small developers",
     price: "৳7,500",
+    highlighted: true,
+    badgeText: "Most Popular",
     features: [
       { included: true, text: "Up to 20 featured listings" },
       { included: true, text: "Homepage featured exposure" },
@@ -51,6 +56,7 @@ const AD_PLANS = [
     name: "Premium",
     subtitle: "Best for developers, large projects & property businesses",
     price: "৳15,000",
+    highlighted: false,
     features: [
       { included: true, text: "Unlimited featured listings" },
       { included: true, text: "Top search placement" },
@@ -73,13 +79,25 @@ export function AdPricingPlans() {
           Our Advertising Plans
         </h2>
 
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch pt-3">
           {AD_PLANS.map((plan, idx) => (
             <div
               key={idx}
-              className="flex flex-col justify-between rounded-[28px] bg-white border border-gray-100/90 shadow-[0_20px_45px_rgba(0,0,0,0.11)] overflow-hidden transition-transform duration-200 hover:-translate-y-1"
+              className={`relative flex flex-col justify-between rounded-[28px] bg-white transition-all duration-200 ${
+                plan.highlighted
+                  ? "border-2 border-[#00c068] shadow-[0_25px_60px_rgba(0,192,104,0.18)] scale-100 md:-translate-y-3 ring-2 ring-[#00c068]/20"
+                  : "border border-gray-100/90 shadow-[0_20px_45px_rgba(0,0,0,0.11)] hover:-translate-y-1"
+              }`}
             >
-              <div>
+              {/* Highlight Badge */}
+              {plan.highlighted && plan.badgeText && (
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-gray-900 px-3.5 py-1 text-[11px] font-bold text-white shadow-md flex items-center gap-1 z-20 whitespace-nowrap">
+                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                  <span>{plan.badgeText}</span>
+                </div>
+              )}
+
+              <div className="overflow-hidden rounded-t-[26px]">
                 {/* Green Top Header */}
                 <div className="relative bg-[#00c068] px-5 pt-6 pb-9 text-center text-white">
                   <h3 className="text-xl font-bold tracking-tight">
@@ -159,7 +177,11 @@ export function AdPricingPlans() {
               <div className="px-5 pb-6 pt-2">
                 <Link
                   href="/talk-to-agent"
-                  className="block w-full rounded-xl border border-[#00c068] py-2.5 text-center text-xs font-semibold text-gray-800 transition hover:bg-[#00c068] hover:text-white"
+                  className={`block w-full rounded-xl py-2.5 text-center text-xs font-semibold transition ${
+                    plan.highlighted
+                      ? "bg-[#00c068] text-white shadow-md shadow-[#00c068]/25 hover:bg-[#099268]"
+                      : "border border-[#00c068] text-gray-800 hover:bg-[#00c068] hover:text-white"
+                  }`}
                 >
                   Get started
                 </Link>
